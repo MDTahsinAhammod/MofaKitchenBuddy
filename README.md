@@ -132,7 +132,7 @@ curl http://localhost:3000/ingredients
 
 ```bash
 curl -X DELETE http://localhost:3000/delete-ingredient \
-    -H "Content-Type: application/```JSON" \
+    -H "Content-Type: application/json" \
     -d '{"name": "Sugar"}'
 ```
 **Response Body:**
