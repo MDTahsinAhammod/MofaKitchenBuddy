@@ -1,12 +1,12 @@
+require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 const cors = require('cors');
 const fs = require('fs');
 const path = require('path');
-const multer = require("multer");
-
+const multer = require('multer');
 
 // Connect to MongoDB
 mongoose.connect('mongodb://localhost:27017/MofaKitchenBuddy', {
@@ -18,7 +18,7 @@ mongoose.connect('mongodb://localhost:27017/MofaKitchenBuddy', {
     console.error('Error connecting to MongoDB:', err);
 });
 
-// Define the Ingredient schema and model
+// Define Ingredient schema and model
 const ingredientSchema = new mongoose.Schema({
     name: { type: String, required: true },
 });
@@ -26,20 +26,18 @@ const ingredientSchema = new mongoose.Schema({
 const Ingredient = mongoose.model('Ingredient', ingredientSchema);
 
 // Initialize the GoogleGenerativeAI library
-const genAI = new GoogleGenerativeAI('AIzaSyA4tOFsFYtZjrvZLe2-uIaLDIi7K4dypfo');
+const genAI = new GoogleGenerativeAI(process.env.api_key);
 
 // Set up the Express app
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
-// Middleware to parse JSON request body
 app.use(bodyParser.json());
 
 // Async function to get AI response
 async function run(prompt) {
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-
+    const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
     const result = await model.generateContent(prompt);
     const response = await result.response;
     const text = response.text();
@@ -58,9 +56,8 @@ app.post('/generate', async (req, res) => {
     try {
         const ingredients = await Ingredient.find();
         const ingredientNames = ingredients.map(ingredient => ingredient.name.toLowerCase()).join(',');
-        //console.log(ingredientNames);
-        prompt = prompt + 'i have these ingredients ' + ingredientNames;
-        console.log('Prompt:',prompt);
+        prompt = prompt + ' i have these ingredients ' + ingredientNames;
+        console.log('Prompt:', prompt);
         const aiResponse = await run(prompt);
         res.json({ response: aiResponse });
     } catch (error) {
@@ -87,13 +84,11 @@ app.post('/add-ingredient', async (req, res) => {
     }
 });
 
+// Route to fetch all ingredients
 app.get('/ingredients', async (req, res) => {
     try {
         const ingredients = await Ingredient.find();
-        const ingredientNames = ingredients.map(ingredient => ingredient.name.toLowerCase()).join(',');
-        console.log(ingredientNames);
         res.status(200).json({ ingredients });
-        
     } catch (error) {
         console.error('Error fetching ingredients:', error);
         res.status(500).json({ error: 'Failed to fetch ingredients' });
@@ -109,8 +104,7 @@ app.delete('/delete-ingredient', async (req, res) => {
     }
 
     try {
-        // Find and delete the ingredient by name
-        const deletedIngredient = await Ingredient.findOneAndDelete({ name: name });
+        const deletedIngredient = await Ingredient.findOneAndDelete({ name });
 
         if (!deletedIngredient) {
             return res.status(404).json({ error: 'Ingredient not found' });
@@ -123,77 +117,79 @@ app.delete('/delete-ingredient', async (req, res) => {
     }
 });
 
-
+// Route to add a recipe to a file
 app.post('/add-recipe', (req, res) => {
     const { title, ingredients, instructions } = req.body;
 
-    // Ensure all fields are provided
     if (!title || !ingredients || !instructions) {
         return res.status(400).json({ message: 'All fields are required!' });
     }
 
-    // Format the recipe data
     const recipeContent = `
     Recipe Title: ${title}
     Ingredients: ${ingredients}
     Instructions: ${instructions}
     -------------------------------
     `;
-
-    // Define the file path where the recipe will be saved
+    
     const filePath = path.join(__dirname, 'my_fav_recipe.txt');
-
-    // Append the new recipe to the text file
+    
     fs.appendFile(filePath, recipeContent, (err) => {
         if (err) {
             return res.status(500).json({ message: 'Failed to save the recipe' });
         }
 
-        // Successfully saved the recipe
         res.status(200).json({ message: 'Recipe added successfully!' });
     });
 });
 
-function fileToGenerativePart(path, mimeType) {
+// Helper function to convert file to generative part
+function fileToGenerativePart(filePath, mimeType) {
     return {
         inlineData: {
-            data: Buffer.from(fs.readFileSync(path)).toString("base64"),
+            data: Buffer.from(fs.readFileSync(filePath)).toString('base64'),
             mimeType,
         },
     };
 }
 
-const upload = multer({ dest: "uploads/" });
+const upload = multer({ dest: 'uploads/' });
+
 // Route to handle image upload and generate response from Gemini model
-app.post("/upload-image", upload.array("images", 1), async (req, res) => {
+app.post('/upload-image', upload.array('images', 1), async (req, res) => {
     if (!req.files || req.files.length < 1) {
-        return res.status(400).json({ error: "Please upload" });
+        return res.status(400).json({ error: 'Please upload an image' });
     }
 
     try {
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+        const prompt = 'What is the food in the image? How can I cook it? Please return the recipe in the format `Recipe Title: ..., Ingredients: ..., Instructions: ...`.';
 
-        const prompt = "what is the food in the image? How can i cook it?but give me only the info of  `Recipe Title: ...., Ingredients: .........,Instructions: .........,` in this format";
-
-        // Convert both uploaded images to the required format for the Gemini model
         const imageParts = req.files.map((file) =>
             fileToGenerativePart(file.path, file.mimetype)
         );
 
-        // Generate response from Gemini model
         const result = await model.generateContent([prompt, ...imageParts]);
         const response = await result.response;
         const text = response.text();
+        
+        const recipeContent = text;
+        const filePath = path.join(__dirname, 'my_fav_recipe.txt');
 
-        // Return the response from Gemini model
-        console.log('Recipe',text);
-        res.status(200).json({ response: text });
+        fs.appendFile(filePath, recipeContent, (err) => {
+            if (err) {
+                return res.status(500).json({ message: 'Failed to save the recipe' });
+            }
+
+            res.status(200).json({ message: 'Recipe added successfully!' });
+        });
+
+        console.log('Recipe:', text);
     } catch (error) {
-        console.error("Error processing images:", error);
-        res.status(500).json({ error: "Failed to process images" });
+        console.error('Error processing image:', error);
+        res.status(500).json({ error: 'Failed to process image' });
     }
 });
-
 
 // Start the Express server
 app.listen(PORT, () => {
