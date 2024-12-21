@@ -30,28 +30,25 @@ This API facilitates recipe generation using AI and ingredient management for th
 
 **Request Body:**
 
-JSON
-
-`{`  
-  `"prompt": "I want to cook something with chicken and vegetables."`  
-`}`
-
+```JSON
+{  
+  "prompt": "I want to cook something with chicken and vegetables."  
+}
+```
 **Example Request:**
 
-Bash
-
-`curl -X POST http://localhost:3000/generate \`  
-    `-H "Content-Type: application/json" \`  
-    `-d '{"prompt": "I want to cook something sweet."}'`
-
+```bash
+curl -X POST http://localhost:3000/generate \
+    -H "Content-Type: application/json" \
+    -d '{"prompt": "I want to cook something sweet."}'
+```
 **Response Body:**
 
-JSON
-
-`{`  
-  `"response": "Recipe Title: Rice Pudding Ingredients: * 1 cup cooked rice * 2 eggs * 2 cups milk * 1/4 cup sugar * 1/4 tsp vanilla extract * Ground cinnamon or nutmeg for topping (optional) Instructions: 1. In a medium bowl, whisk together the eggs, milk, sugar, and vanilla extract. 2. Add the cooked rice to the wet ingredients and stir until combined. 3. Pour the mixture into a greased 8-inch baking dish. 4. Bake at 350°F (175°C) for 45-55 minutes, or until the pudding is set and slightly golden on top. 5. Sprinkle with ground cinnamon or nutmeg, if desired, before serving."`  
-`}`
-
+```JSON
+{  
+  "response": "Recipe Title: Rice Pudding Ingredients: * 1 cup cooked rice * 2 eggs * 2 cups milk * 1/4 cup sugar * 1/4 tsp vanilla extract * Ground cinnamon or nutmeg for topping (optional) Instructions: 1. In a medium bowl, whisk together the eggs, milk, sugar, and vanilla extract. 2. Add the cooked rice to the wet ingredients and stir until combined. 3. Pour the mixture into a greased 8-inch baking dish. 4. Bake at 350°F (175°C) for 45-55 minutes, or until the pudding is set and slightly golden on top. 5. Sprinkle with ground cinnamon or nutmeg, if desired, before serving."  
+}
+```
 **Error Codes:**
 
 * 400: Bad Request (missing prompt)  
@@ -65,32 +62,29 @@ JSON
 
 **Request Body:**
 
-JSON
-
-`{`  
-  `"name": "Sugar"`  
-`}`
-
+```JSON
+{  
+  "name": "Sugar"  
+}
+```
 **Example Request:**
 
-Bash
-
-`curl -X POST http://localhost:3000/add-ingredient \`  
-    `-H "Content-Type: application/json" \`  
-    `-d '{"name": "Sugar"}'`
-
+```bash
+curl -X POST http://localhost:3000/add-ingredient \
+    -H "Content-Type: application/json" \
+    -d '{"name": "Sugar"}'
+```
 **Response Body:**
 
-JSON
-
-`{`  
-  `"message": "Ingredient added successfully",`  
-  `"ingredient": {`  
-    `"_id": "64f...",`  
-    `"name": "Sugar"`  
-  `}`  
-`}`
-
+```JSON
+{  
+  "message": "Ingredient added successfully",  
+  "ingredient": {  
+    "_id": "64f...",  
+    "name": "Sugar"  
+  }  
+}
+```
 **Error Codes:**
 
 * 400: Bad Request (missing ingredient name)  
@@ -104,21 +98,19 @@ JSON
 
 **Example Request:**
 
-Bash
-
-`curl http://localhost:3000/ingredients`
-
+```bash
+curl http://localhost:3000/ingredients
+```
 **Response Body:**
 
-JSON
-
-`{`  
-  `"ingredients": [`  
-    `{"_id": "64f...", "name": "Sugar"},`  
-    `{"_id": "64f...", "name": "Salt"}`  
-  `]`  
-`}`
-
+```JSON
+{  
+  "ingredients": [  
+    {"_id": "64f...", "name": "Sugar"},  
+    {"_id": "64f...", "name": "Salt"}  
+  ]  
+}
+```
 **Error Codes:**
 
 * 500: Internal Server Error
@@ -131,32 +123,29 @@ JSON
 
 **Request Body:**
 
-JSON
-
-`{`  
-  `"name": "Sugar"`  
-`}`
-
+```JSON
+{  
+  "name": "Sugar"  
+}
+```
 **Example Request:**
 
-Bash
-
-`curl -X DELETE http://localhost:3000/delete-ingredient \`  
-    `-H "Content-Type: application/json" \`  
-    `-d '{"name": "Sugar"}'`
-
+```bash
+curl -X DELETE http://localhost:3000/delete-ingredient \
+    -H "Content-Type: application/```JSON" \
+    -d '{"name": "Sugar"}'
+```
 **Response Body:**
 
-JSON
-
-`{`  
-  `"message": "Ingredient deleted successfully",`  
-  `"ingredient": {`  
-    `"_id": "64f...",`  
-    `"name": "Sugar"`  
-  `}`  
-`}`
-
+```JSON
+{  
+  "message": "Ingredient deleted successfully",  
+  "ingredient": {  
+    "_id": "64f...",  
+    "name": "Sugar"  
+  }  
+}
+```
 **Error Codes:**
 
 * 400: Bad Request (missing ingredient name)  
@@ -171,34 +160,31 @@ JSON
 
 **Request Body:**
 
-JSON
-
-`{`  
-  `"title": "Chocolate Cake",`  
-  `"ingredients": "Flour, Sugar, Cocoa",`  
-  `"instructions": "Mix ingredients and bake."`  
-`}`
-
+```JSON
+{  
+  "title": "Chocolate Cake",  
+  "ingredients": "Flour, Sugar, Cocoa",  
+  "instructions": "Mix ingredients and bake."  
+}
+```
 **Example Request:**
 
-Bash
-
-`curl -X POST http://localhost:3000/add-recipe \`  
-    `-H "Content-Type: application/json" \`  
-    `-d '{`  
-        `"title": "Chocolate Cake",`  
-        `"ingredients": "Flour, Sugar, Cocoa",`  
-        `"instructions": "Mix ingredients and bake."`  
-    `}'`
-
+```bash
+curl -X POST http://localhost:3000/add-recipe \
+    -H "Content-Type: application/json" \
+    -d '{  
+        "title": "Chocolate Cake",  
+        "ingredients": "Flour, Sugar, Cocoa",  
+        "instructions": "Mix ingredients and bake."  
+    }'
+```
 **Response Body:**
 
-JSON
-
-`{`  
-  `"message": "Recipe added successfully!"`  
-`}`
-
+```JSON
+{  
+  "message": "Recipe added successfully!"  
+}
+```
 **Error Codes:**
 
 * 400: Bad Request (missing fields)  
@@ -216,21 +202,19 @@ Multipart form data with an images field containing the image file.
 
 **Example Request:**
 
-Bash
-
-`curl -X POST http://localhost:3000/upload-image \`  
-    `-F "images=@/path/to/image.jpg"`
-
+```bash
+curl -X POST http://localhost:3000/upload-image \
+    -F "images=@/path/to/image.jpg"
+```
 (Replace /path/to/image.jpg with the actual path to your image file.)
 
 **Response Body:**
 
-JSON
-
-`{`  
-  `"message": "Recipe added successfully!"`  
-`}`
-
+```JSON
+{  
+  "message": "Recipe added successfully!"  
+}
+```
 **Error Codes:**
 
 * 400: Bad Request (missing image)  
