@@ -3,9 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Ingredient List</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Ingredient List</h1>
+
+        <!-- Form for adding ingredients -->
+        <form id="ingredient-form" class="mb-4">
+            <div class="mb-3">
+                <label for="ingredient-input" class="form-label">Add an Ingredient:</label>
+                <input type="text" class="form-control" id="ingredient-input" placeholder="Enter ingredient" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Ingredient</button>
+        </form>
+
+        <!-- Ingredient list -->
+        <h2 class="mb-3">Your Ingredients:</h2>
+        <ul id="ingredient-list" class="list-group">
+            <!-- Dynamically added ingredients will appear here -->
+        </ul>
+    </div>
+
+    <!-- Bootstrap JS and Popper.js -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Custom Script -->
+    <script>
+        document.getElementById('ingredient-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form from submitting normally
+
+            // Get the ingredient value
+            const ingredientInput = document.getElementById('ingredient-input');
+            const ingredientValue = ingredientInput.value.trim();
+
+            if (ingredientValue !== '') {
+                // Create a new list item
+                const listItem = document.createElement('li');
+                listItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+                listItem.textContent = ingredientValue;
+
+                // Add a remove button
+                const removeButton = document.createElement('button');
+                removeButton.className = 'btn btn-danger btn-sm';
+                removeButton.textContent = 'Remove';
+                removeButton.addEventListener('click', function() {
+                    listItem.remove(); // Remove the list item when the button is clicked
+                });
+
+                listItem.appendChild(removeButton);
+
+                // Append the new list item to the ingredient list
+                document.getElementById('ingredient-list').appendChild(listItem);
+
+                // Clear the input field
+                ingredientInput.value = '';
+            }
+        });
+    </script>
 </body>
 </html>
