@@ -16,6 +16,13 @@
             margin-top: 1rem;
             font-weight: bold;
         }
+
+        #image-preview {
+            max-width: 300px;
+            max-height: 300px;
+            object-fit: cover;
+            margin-top: 1rem;
+        }
     </style>
 </head>
 <body>
@@ -43,6 +50,26 @@
 
         <!-- Response Message -->
         <div id="response-message" class="text-center"></div>
+
+        <!-- Image Upload Section -->
+        <div class="card p-4 shadow mt-4">
+            <h3 class="text-center">Upload Recipe Image</h3>
+            <form id="image-upload-form" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="recipe-image" class="form-label">Choose Image</label>
+                    <input type="file" id="recipe-image" name="images" class="form-control" accept="image/*" required>
+                </div>
+                <img id="image-preview" src="" alt="Image Preview" style="display:none;">
+                <button type="submit" class="btn btn-secondary w-100 mt-3">Upload Image</button>
+            </form>
+        </div>
+
+        <div>
+            <form action="http://localhost:3000/upload-image" method="post"></form>
+            <input type="file" name="images">
+            <button type="submit">Upload</button>
+        </div>
+
     </div>
 
     <!-- Bootstrap JS and Popper.js -->
@@ -51,8 +78,24 @@
     <script>
         const recipeForm = document.getElementById('recipe-form');
         const responseMessage = document.getElementById('response-message');
+        const recipeImageInput = document.getElementById('recipe-image');
+        const imagePreview = document.getElementById('image-preview');
+        const imageUploadForm = document.getElementById('image-upload-form');
 
-        // Function to handle form submission
+        // Preview the selected image
+        recipeImageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function() {
+                    imagePreview.src = reader.result;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Handle Recipe Form Submission
         recipeForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
@@ -92,6 +135,42 @@
             } catch (error) {
                 console.error('Error:', error);
                 responseMessage.textContent = 'Failed to add the recipe. Please try again later.';
+                responseMessage.className = 'text-danger';
+            }
+        });
+
+        // Handle Image Upload
+        imageUploadForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const image = recipeImageInput.files[0];
+
+            if (!image) {
+                responseMessage.textContent = 'Please select an image first!';
+                responseMessage.className = 'text-danger';
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', image);
+
+            try {
+                const response = await fetch('http://localhost:3000/upload-image', {
+                    method: 'POST',
+                    body: formData,
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to upload the image');
+                }
+
+                const result = await response.json();
+                responseMessage.textContent = `Image uploaded successfully! ${result.message}`;
+                responseMessage.className = 'text-success';
+                imagePreview.style.display = 'none';
+            } catch (error) {
+                console.error('Error:', error);
+                responseMessage.textContent = 'Failed to upload the image. Please try again later.';
                 responseMessage.className = 'text-danger';
             }
         });
