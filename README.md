@@ -21,7 +21,7 @@ MofaKitchenBuddy is a recipe generation and ingredient management API that lever
 - **dotenv**: For environment variable management
 
 ## Prerequisites
-- Node.js (v14 or higher)
+- Node.js 
 - MongoDB running locally or a remote MongoDB instance
 - A Google API key for the **Google Generative AI** model (Gemini)
 - **Multer** for file uploads
@@ -31,5 +31,15 @@ MofaKitchenBuddy is a recipe generation and ingredient management API that lever
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/yourusername/mofakitchenbuddy.git
-cd mofakitchenbuddy
+git clone https://github.com/MDTahsinAhammod/MofaKitchenBuddy
+cd mofakitchenbuddy 
+```
+
+Install Dependency
+```bash
+npm i
+```
+Run the project
+```bash
+node server.js
+```
